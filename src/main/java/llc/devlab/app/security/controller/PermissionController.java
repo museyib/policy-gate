@@ -1,0 +1,45 @@
+package llc.devlab.app.security.controller;
+
+import llc.devlab.app.security.model.dto.PermissionDto;
+import llc.devlab.app.security.model.dto.RolePermissionRequest;
+import llc.devlab.app.security.model.dto.UserPermissionRequest;
+import llc.devlab.app.security.service.PermissionService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/permissions")
+@RequiredArgsConstructor
+public class PermissionController {
+    private final PermissionService permissionService;
+
+    @GetMapping("/role/{roleId}")
+    @PreAuthorize("hasPermission('PERMISSION', 'READ')")
+    public ResponseEntity<PermissionDto> getRolePermission(@PathVariable Long roleId) {
+        PermissionDto permissionDto = permissionService.getRolePermission(roleId);
+        return ResponseEntity.ok(permissionDto);
+    }
+
+    @PostMapping("/role/{roleId}")
+    @PreAuthorize("hasPermission('PERMISSION', 'UPDATE')")
+    public ResponseEntity<Void> updateRolePermission(@PathVariable Long roleId, @RequestBody RolePermissionRequest request) {
+        permissionService.updateRolePermission(roleId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasPermission('PERMISSION', 'READ')")
+    public ResponseEntity<PermissionDto> getUserPermission(@PathVariable Long userId) {
+        PermissionDto permissionDto = permissionService.getUserPermission(userId);
+        return ResponseEntity.ok(permissionDto);
+    }
+
+    @PostMapping("/user/{userId}")
+    @PreAuthorize("hasPermission('PERMISSION', 'UPDATE')")
+    public ResponseEntity<Void> updateUserPermission(@PathVariable Long userId, @RequestBody UserPermissionRequest request) {
+        permissionService.updateUserPermission(userId, request);
+        return ResponseEntity.ok().build();
+    }
+}
