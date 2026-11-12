@@ -15,15 +15,13 @@ public class PermissionMapper {
     private EntityManager entityManager;
 
     public Set<AppPermission> toEntity(Set<PermissionRequestItem> permissions, Permissible permissible) {
-        Long roleId = permissible instanceof AppRole ? permissible.getId() : 0;
-        Long userId = permissible instanceof AppUser ? permissible.getId() : 0;
         return permissions.stream()
-                .map(dto -> {
+                .map(item -> {
                     AppPermission appPermission = new AppPermission();
-                    appPermission.setAppRole(mapToAppRole(roleId));
-                    appPermission.setAppUser(mapToAppUser(userId));
-                    appPermission.setResource(mapToResource(dto.resourceId()));
-                    appPermission.setAction(dto.action());
+                    appPermission.setAppRole(permissible instanceof AppRole ? (AppRole) permissible : null);
+                    appPermission.setAppUser(permissible instanceof AppUser ? (AppUser) permissible : null);
+                    appPermission.setResource(mapToResource(item.resourceId()));
+                    appPermission.setAction(item.action());
                     return appPermission;
                 })
                 .collect(Collectors.toSet());
@@ -35,12 +33,6 @@ public class PermissionMapper {
                 .collect(Collectors.toSet());
     }
 
-    AppRole mapToAppRole(Long value) {
-        return value == 0 ? null : entityManager.getReference(AppRole.class, value);
-    }
-    AppUser mapToAppUser(Long value) {
-        return value == 0 ? null : entityManager.getReference(AppUser.class, value);
-    }
     Resource mapToResource(Long value) {
         return value == 0 ? null : entityManager.getReference(Resource.class, value);
     }

@@ -3,10 +3,8 @@ package llc.devlab.app.security.service;
 import llc.devlab.app.exception.ResourceNotFoundException;
 import llc.devlab.app.security.mapper.PermissionMapper;
 import llc.devlab.app.security.model.dto.*;
-import llc.devlab.app.security.model.entity.AppPermission;
-import llc.devlab.app.security.model.entity.AppRole;
-import llc.devlab.app.security.model.entity.AppUser;
-import llc.devlab.app.security.model.entity.Permissible;
+import llc.devlab.app.security.model.entity.*;
+import llc.devlab.app.security.repository.PermissionChangeRepository;
 import llc.devlab.app.security.repository.PermissionRepository;
 import llc.devlab.app.security.repository.RoleRepository;
 import llc.devlab.app.security.repository.UserRepository;
@@ -23,6 +21,7 @@ public class PermissionService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
+    private final PermissionChangeRepository permissionChangeRepository;
     private final PermissionMapper permissionMapper;
 
     public PermissionResponse getUserPermission(Long id) {
@@ -59,5 +58,20 @@ public class PermissionService {
                 .collect(Collectors.toSet());
         permissionRepository.deleteAll(permissionsToDelete);
         permissionRepository.saveAll(permissionsToAdd);
+
+        createPermissionChangeRecord(currentPermissions, permissionsIncoming, permissible);
+    }
+
+    private void createPermissionChangeRecord(Set<AppPermission> oldValue,
+                                              Set<AppPermission> newValue,
+                                              Permissible permissible) {
+
+        PermissionChange permissionChange = PermissionChange.builder()
+                .appRole(permissible instanceof AppRole ? (AppRole) permissible : null)
+                .appUser(permissible instanceof AppUser ? (AppUser) permissible : null)
+                .oldValue(new PermissionChange.PermissionChangeRecord(permissionMapper.toDto(oldValue)))
+                .newValue(new PermissionChange.PermissionChangeRecord(permissionMapper.toDto(newValue)))
+                .build();
+        permissionChangeRepository.save(permissionChange);
     }
 }
