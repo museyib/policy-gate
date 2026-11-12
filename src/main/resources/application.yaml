@@ -27,6 +27,15 @@ spring:
     error:
       include-message: never
       include-stacktrace: never
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1h
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
 
 springdoc:
   swagger-ui:

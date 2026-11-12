@@ -6,10 +6,13 @@ import llc.devlab.app.security.model.dto.RoleDto;
 import llc.devlab.app.security.model.entity.AppRole;
 import llc.devlab.app.security.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static llc.devlab.app.config.CacheConfig.CacheNames.HAS_PERMISSION;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class RoleService {
     }
 
     @Transactional
+    @CacheEvict(value = HAS_PERMISSION, allEntries = true)
     public RoleDto updateRole(Long id, RoleDto roleDto) {
         AppRole role = loadAppRole(id);
         roleMapper.updateEntity(roleDto, role);
@@ -40,6 +44,7 @@ public class RoleService {
     }
 
     @Transactional
+    @CacheEvict(value = HAS_PERMISSION, allEntries = true)
     public void deleteRole(Long id) {
         AppRole role = loadAppRole(id);
         roleRepository.delete(role);
