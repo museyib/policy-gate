@@ -11,7 +11,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "app_role")
-public class AppRole extends AuditableEntity {
+public class AppRole extends AuditableEntity implements Permissible {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

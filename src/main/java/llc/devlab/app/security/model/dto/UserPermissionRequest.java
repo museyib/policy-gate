@@ -1,11 +1,6 @@
 package llc.devlab.app.security.model.dto;
 
-import llc.devlab.app.security.model.enums.Action;
+import java.util.Set;
 
-import java.util.List;
-
-public record UserPermissionRequest(List<Permission> permissions) {
-    public record Permission(Long resourceId,
-                             Action action) {
-    }
+public record UserPermissionRequest(Set<PermissionRequestItem> permissions) {
 }

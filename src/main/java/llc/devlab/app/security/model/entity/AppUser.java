@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "app_user")
-public class AppUser extends AuditableEntity {
+public class AppUser extends AuditableEntity implements Permissible {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

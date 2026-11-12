@@ -1,6 +1,6 @@
 package llc.devlab.app.security.controller;
 
-import llc.devlab.app.security.model.dto.PermissionDto;
+import llc.devlab.app.security.model.dto.PermissionResponse;
 import llc.devlab.app.security.model.dto.RolePermissionRequest;
 import llc.devlab.app.security.model.dto.UserPermissionRequest;
 import llc.devlab.app.security.service.PermissionService;
@@ -17,9 +17,9 @@ public class PermissionController {
 
     @GetMapping("/role/{roleId}")
     @PreAuthorize("hasPermission('PERMISSION', 'READ')")
-    public ResponseEntity<PermissionDto> getRolePermission(@PathVariable Long roleId) {
-        PermissionDto permissionDto = permissionService.getRolePermission(roleId);
-        return ResponseEntity.ok(permissionDto);
+    public ResponseEntity<PermissionResponse> getRolePermission(@PathVariable Long roleId) {
+        PermissionResponse permissionResponse = permissionService.getRolePermission(roleId);
+        return ResponseEntity.ok(permissionResponse);
     }
 
     @PostMapping("/role/{roleId}")
@@ -31,9 +31,9 @@ public class PermissionController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasPermission('PERMISSION', 'READ')")
-    public ResponseEntity<PermissionDto> getUserPermission(@PathVariable Long userId) {
-        PermissionDto permissionDto = permissionService.getUserPermission(userId);
-        return ResponseEntity.ok(permissionDto);
+    public ResponseEntity<PermissionResponse> getUserPermission(@PathVariable Long userId) {
+        PermissionResponse permissionResponse = permissionService.getUserPermission(userId);
+        return ResponseEntity.ok(permissionResponse);
     }
 
     @PostMapping("/user/{userId}")

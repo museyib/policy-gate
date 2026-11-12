@@ -2,12 +2,8 @@ package llc.devlab.app.security.mapper;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import llc.devlab.app.security.model.dto.RolePermissionRequest;
-import llc.devlab.app.security.model.dto.UserPermissionRequest;
-import llc.devlab.app.security.model.entity.AppPermission;
-import llc.devlab.app.security.model.entity.AppRole;
-import llc.devlab.app.security.model.entity.AppUser;
-import llc.devlab.app.security.model.entity.Resource;
+import llc.devlab.app.security.model.dto.PermissionRequestItem;
+import llc.devlab.app.security.model.entity.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -18,11 +14,14 @@ public class PermissionMapper {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public Set<AppPermission> toEntity(Long roleId, RolePermissionRequest request) {
-        return request.permissions().stream()
+    public Set<AppPermission> toEntity(Set<PermissionRequestItem> permissions, Permissible permissible) {
+        Long roleId = permissible instanceof AppRole ? permissible.getId() : 0;
+        Long userId = permissible instanceof AppUser ? permissible.getId() : 0;
+        return permissions.stream()
                 .map(dto -> {
                     AppPermission appPermission = new AppPermission();
                     appPermission.setAppRole(mapToAppRole(roleId));
+                    appPermission.setAppUser(mapToAppUser(userId));
                     appPermission.setResource(mapToResource(dto.resourceId()));
                     appPermission.setAction(dto.action());
                     return appPermission;
@@ -30,15 +29,9 @@ public class PermissionMapper {
                 .collect(Collectors.toSet());
     }
 
-    public Set<AppPermission> toEntity(Long userId, UserPermissionRequest request) {
-        return request.permissions().stream()
-                .map(dto -> {
-                    AppPermission appPermission = new AppPermission();
-                    appPermission.setAppUser(mapToAppUser(userId));
-                    appPermission.setResource(mapToResource(dto.resourceId()));
-                    appPermission.setAction(dto.action());
-                    return appPermission;
-                })
+    public Set<PermissionRequestItem> toDto(Set<AppPermission> permissions) {
+        return permissions.stream()
+                .map(dto -> new PermissionRequestItem(dto.getResource().getId(), dto.getAction()))
                 .collect(Collectors.toSet());
     }
 

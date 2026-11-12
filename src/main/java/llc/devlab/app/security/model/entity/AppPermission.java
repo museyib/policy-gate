@@ -5,6 +5,8 @@ import llc.devlab.app.security.model.enums.Action;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @Entity
@@ -30,4 +32,16 @@ public class AppPermission {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     private AppUser appUser;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        AppPermission that = (AppPermission) o;
+        return Objects.equals(resource, that.resource) && action == that.action && Objects.equals(appRole, that.appRole) && Objects.equals(appUser, that.appUser);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resource, action, appRole, appUser);
+    }
 }
