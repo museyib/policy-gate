@@ -17,6 +17,7 @@ public class AppRole extends AuditableEntity implements Permissible {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "name", nullable = false)
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "appRole")

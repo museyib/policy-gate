@@ -2,6 +2,7 @@ package llc.devlab.app.security.controller;
 
 import llc.devlab.app.security.model.dto.UserDto;
 import llc.devlab.app.security.model.dto.UserUpdateRequest;
+import llc.devlab.app.security.model.enums.UserType;
 import llc.devlab.app.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,5 +34,10 @@ public class UserController {
     @PreAuthorize("hasPermission('USER', 'UPDATE')")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest userDto) {
         return ResponseEntity.ok(userService.updateUser(id, userDto));
+    }
+
+    @PostMapping("/{id}/type")
+    public ResponseEntity<UserDto> changeUserType(@PathVariable Long id, @RequestBody UserType userType) {
+        return ResponseEntity.ok(userService.changeUserType(id, userType));
     }
 }

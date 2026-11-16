@@ -2,6 +2,7 @@ package llc.devlab.app.security.service;
 
 import llc.devlab.app.exception.ResourceNotFoundException;
 import llc.devlab.app.security.mapper.RoleMapper;
+import llc.devlab.app.security.model.dto.RoleCreateRequest;
 import llc.devlab.app.security.model.dto.RoleDto;
 import llc.devlab.app.security.model.entity.AppRole;
 import llc.devlab.app.security.repository.RoleRepository;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static llc.devlab.app.config.CacheConfig.CacheNames.HAS_PERMISSION;
+import static llc.devlab.app.config.CacheConfig.CacheNames.ROLE_PERMISSIONS;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +33,12 @@ public class RoleService {
     }
 
     @Transactional
-    public RoleDto createRole(RoleDto roleDto) {
-        return roleMapper.toDto(roleRepository.save(roleMapper.toEntity(roleDto)));
+    public RoleDto createRole(RoleCreateRequest request) {
+        return roleMapper.toDto(roleRepository.save(roleMapper.toEntity(request)));
     }
 
     @Transactional
-    @CacheEvict(value = HAS_PERMISSION, allEntries = true)
+    @CacheEvict(value = {HAS_PERMISSION, ROLE_PERMISSIONS}, allEntries = true)
     public RoleDto updateRole(Long id, RoleDto roleDto) {
         AppRole role = loadAppRole(id);
         roleMapper.updateEntity(roleDto, role);
@@ -44,7 +46,7 @@ public class RoleService {
     }
 
     @Transactional
-    @CacheEvict(value = HAS_PERMISSION, allEntries = true)
+    @CacheEvict(value = {HAS_PERMISSION, ROLE_PERMISSIONS}, allEntries = true)
     public void deleteRole(Long id) {
         AppRole role = loadAppRole(id);
         roleRepository.delete(role);

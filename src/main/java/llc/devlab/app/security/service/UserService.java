@@ -6,13 +6,16 @@ import llc.devlab.app.security.mapper.UserMapper;
 import llc.devlab.app.security.model.dto.UserDto;
 import llc.devlab.app.security.model.dto.UserUpdateRequest;
 import llc.devlab.app.security.model.entity.AppUser;
+import llc.devlab.app.security.model.enums.UserType;
 import llc.devlab.app.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static llc.devlab.app.config.CacheConfig.CacheNames.*;
 import static llc.devlab.app.security.model.enums.UserType.USER;
 
 @Service
@@ -34,14 +37,23 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = {HAS_PERMISSION, ROLE_PERMISSIONS, USER_PERMISSIONS}, allEntries = true)
     public UserDto updateUser(Long id, UserUpdateRequest request) {
         AppUser appUser = loadAppUser(id);
 
-        if (appUser.isRootUser() && USER.equals(request.userType())) {
+        userMapper.updateEntity(request, appUser);
+        return userMapper.toDto(appUser);
+    }
+
+    @Transactional
+    @CacheEvict(value = {HAS_PERMISSION, ROLE_PERMISSIONS, USER_PERMISSIONS}, allEntries = true)
+    public UserDto changeUserType(Long id, UserType userType) {
+        AppUser appUser = loadAppUser(id);
+
+        if (appUser.isRootUser() && USER.equals(userType)) {
             throw new ForbiddenException("Root user cannot be changed");
         }
-
-        userMapper.updateEntity(request, appUser);
+        appUser.setUserType(userType);
         return userMapper.toDto(appUser);
     }
 

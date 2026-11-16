@@ -1,6 +1,5 @@
 package llc.devlab.app.security.service;
 
-import llc.devlab.app.config.CacheConfig;
 import llc.devlab.app.exception.ResourceNotFoundException;
 import llc.devlab.app.security.mapper.PermissionMapper;
 import llc.devlab.app.security.model.dto.*;
@@ -18,8 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static llc.devlab.app.config.CacheConfig.CacheNames.HAS_PERMISSION;
-import static llc.devlab.app.config.CacheConfig.CacheNames.ROLE_PERMISSIONS;
+import static llc.devlab.app.config.CacheConfig.CacheNames.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +28,7 @@ public class PermissionService {
     private final PermissionChangeRepository permissionChangeRepository;
     private final PermissionMapper permissionMapper;
 
-    @Cacheable(value = CacheConfig.CacheNames.USER_PERMISSIONS, key = "#userId")
+    @Cacheable(value = USER_PERMISSIONS, key = "#userId")
     public PermissionResponse getUserPermission(Long userId) {
         Set<PermissionItemResponse> permissions = permissionRepository.getPermissionsByUserId(userId).stream()
                 .map(permission -> new PermissionItemResponse(
@@ -49,7 +47,7 @@ public class PermissionService {
     }
 
     @Transactional
-    @CacheEvict(value = {HAS_PERMISSION, ROLE_PERMISSIONS}, allEntries = true)
+    @CacheEvict(value = {HAS_PERMISSION, ROLE_PERMISSIONS, USER_PERMISSIONS}, allEntries = true)
     public void updateRolePermission(Long roleId, RolePermissionRequest request) {
         AppRole appRole = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
@@ -57,7 +55,7 @@ public class PermissionService {
     }
 
     @Transactional
-    @CacheEvict(value = {HAS_PERMISSION, CacheConfig.CacheNames.USER_PERMISSIONS}, allEntries = true)
+    @CacheEvict(value = {HAS_PERMISSION, USER_PERMISSIONS}, allEntries = true)
     public void updateUserPermission(Long userId, UserPermissionRequest request) {
         AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

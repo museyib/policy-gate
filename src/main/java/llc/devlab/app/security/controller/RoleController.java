@@ -1,5 +1,7 @@
 package llc.devlab.app.security.controller;
 
+import jakarta.validation.Valid;
+import llc.devlab.app.security.model.dto.RoleCreateRequest;
 import llc.devlab.app.security.model.dto.RoleDto;
 import llc.devlab.app.security.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +33,8 @@ public class RoleController {
 
     @PostMapping
     @PreAuthorize("hasPermission('ROLE', 'CREATE')")
-    public ResponseEntity<RoleDto> createRole(@RequestBody RoleDto roleDto) {
-        return ResponseEntity.status(CREATED).body(roleService.createRole(roleDto));
+    public ResponseEntity<RoleDto> createRole(@Valid @RequestBody RoleCreateRequest request) {
+        return ResponseEntity.status(CREATED).body(roleService.createRole(request));
     }
 
     @PatchMapping("/{id}")

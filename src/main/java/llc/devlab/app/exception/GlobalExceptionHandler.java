@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -55,9 +56,9 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.FORBIDDEN, exception.getMessage(), exception, request.getRequestURI(), List.of());
     }
 
-    @ExceptionHandler({ObjectOptimisticLockingFailureException.class})
-    ResponseEntity<ApiErrorResponse> handleOptimisticLockingFailure(ObjectOptimisticLockingFailureException exception, HttpServletRequest request) {
-        return build(HttpStatus.CONFLICT, "Optimistic locking failure occurred.", exception, request.getRequestURI(), List.of());
+    @ExceptionHandler({ObjectOptimisticLockingFailureException.class, DataIntegrityViolationException.class})
+    ResponseEntity<ApiErrorResponse> handleOptimisticLockingFailure(Exception exception, HttpServletRequest request) {
+        return build(HttpStatus.CONFLICT, "Database error occurred.", exception, request.getRequestURI(), List.of());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
